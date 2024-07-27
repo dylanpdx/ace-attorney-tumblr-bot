@@ -1,24 +1,122 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Tumblr Ace Court Bot</title>
-    <style>
-        html, body {
-            height: 100%;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+	<head>
+		<title>Tumblr Ace Court Bot</title>
+	</head>
 
-        video {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-    </style>
-</head>
-<body>
-    <video src="https://acecourtbot-output.dylanpdx.io/{{VIDID}}.mp4" controls autoplay></video>
-</body>
+	<style>
+		@font-face {
+			font-family: "Igiari";
+			src: url("Igiari.woff") format("woff");
+		}
+
+		body {
+			width: 100vw;
+			height: 100vh;
+			margin: 0;
+			background:
+				center/100% 15px repeating-linear-gradient(
+					transparent 0px 12px,
+					#fff4 12px 15px
+				),
+				no-repeat center/cover url(courtbg.png);
+			font-family: "Igiari", sans-serif;
+			font-size: 16px;
+			color: white;
+			box-shadow: inset 0 0 50px 50px #000a;
+			overflow: hidden;
+		}
+
+		video {
+			position: absolute;
+			inset: 50% 50%;
+			transform: translate(-50%, -50%);
+			width: min(calc(3 * 256px), 100vw);
+			max-height: min(calc(3 * 192px), calc(100vh - 7rem));
+			image-rendering: pixelated;
+			border: 3px solid white;
+			border-radius: 6px;
+			box-shadow: 0 0 50px 25px #000a;
+		}
+
+		a.button {
+			font-size: 3rem;
+			text-decoration: none;
+			position: absolute;
+			background: #7b3100;
+			padding: 0.2em 2ch;
+			border: 3px solid white;
+			text-shadow:
+				3px 0 #632100,
+				-3px 0 #632100,
+				0 -3px #632100,
+				0 3px #632100;
+			box-shadow:
+				inset 0 0 0 3px #424242, /* Border */
+				inset 0 -6px 0 0 #6b2900, /* Bottom */
+				inset 6px 0 0 0 #844210, /* Left */
+				inset -6px 0 0 0 #844210, /* Right */
+				inset 0 6px 0 0 #a57b5a; /* Top */
+			color: white;
+			transition: .1s all;
+		}
+
+		a.button:hover {
+			background: #eba220;
+			text-shadow:
+				3px 0 #cb8220,
+				-3px 0 #cb8220,
+				0 -3px #cb8220,
+				0 3px #cb8220;
+			box-shadow:
+				inset 0 0 0 3px #b2b2b2, /* Border */
+				inset 0 -6px 0 0 #c1a13a, /* Bottom */
+				inset 6px 0 0 0 #fbba20, /* Left */
+				inset -6px 0 0 0 #fbba20, /* Right */
+				inset 0 6px 0 0 #fbf320; /* Top */
+		}
+
+		.button.left {
+			inset: auto auto 0 0;
+			border-top-right-radius: 48px;
+		}
+
+		.button.right {
+			inset: auto 0 0 auto;
+			border-top-left-radius: 48px;
+		}
+
+		footer {
+			width: 100vw;
+			text-align: center;
+			position: fixed;
+			bottom: 0;
+			height: 2em;
+			background: white;
+			color: gray;
+			line-height: 2;
+		}
+
+		footer a {
+			color: gray;
+			text-decoration: dotted underline;
+			transition: .1s all;
+		}
+
+		footer a:hover {
+			color: #7b3100;
+		}
+	</style>
+
+	<body>
+		<video src="https://acecourtbot-output.dylanpdx.io/757114978360819712.mp4" controls autoplay></video>
+
+		<footer>
+			<span> Made by <a href="https://github.com/dylanpdx">dylanpdx</a> using <a href="https://github.com/LuisMayo/objection_engine">Objection Engine</a>. Source code available <a href="https://github.com/dylanpdx/ace-attorney-tumblr-bot">here</a>. Output page by <a href="https://lensdeer.neocities.org">lensdeer</a>. "Ace Attorney" series © Capcom.</span>
+		</footer>
+
+		<a class="button left" href="https://acecourtbout-output.dylanpdx.io/{{VIDID}}"> Download </a>
+		<a class="button right" href=""> About </a>
+
+	</body>
 </html>

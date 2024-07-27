@@ -37,7 +37,7 @@ export default {
 		const data = new Response(IndexHtml);
 		const html = await data.text();
 		
-		const replaced = html.replace('{{VIDID}}', "v/"+videoId);
+		const replaced = html.replace(/{{VIDID}}/g, "v/"+videoId);
 
 		return new Response(replaced, {
 			headers: {

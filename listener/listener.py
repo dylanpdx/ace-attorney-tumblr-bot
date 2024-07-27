@@ -177,7 +177,7 @@ def handle_completed_tasks():
                     postid,
                     content=[
                         {'type': 'text', 'text': "Here is your generated video!"},
-                        {'type': 'link', 'url': pageUrl, 'title': 'Ace Attorney Video', 'description': 'Ace attourney court video generated from this thread',"poster":[{
+                        {'type': 'link', 'url': pageUrl, 'title': 'Ace Attorney Video', 'description': 'Ace attorney court video generated from this thread',"poster":[{
                             "url":THUMBNAIL_URL
                         }]},
                     ],

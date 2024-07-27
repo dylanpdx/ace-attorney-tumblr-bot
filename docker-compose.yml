@@ -1,0 +1,37 @@
+version: '3'
+services:
+  listener:
+    build: ./listener
+    environment:
+      CELERY_BROKER_URL: redis://database/
+      CELERY_RESULT_BACKEND: rpc://
+      TUMBLR_CONSUMER_KEY: ${TUMBLR_CONSUMER_KEY}
+      TUMBLR_CONSUMER_SECRET: ${TUMBLR_CONSUMER_SECRET}
+      TUMBLR_OAUTH_TOKEN: ${TUMBLR_OAUTH_TOKEN}
+      TUMBLR_OAUTH_TOKEN_SECRET: ${TUMBLR_OAUTH_TOKEN_SECRET}
+      TUMBLR_BLOG_NAME: ${TUMBLR_BLOG_NAME}
+      NOTIF_CHECK_INTERVAL: ${NOTIF_CHECK_INTERVAL}
+      COMPLETED_TASKS_CHECK_INTERVAL: ${COMPLETED_TASKS_CHECK_INTERVAL}
+      WEB_DOMAIN: ${WEB_DOMAIN}
+      THUMBNAIL_URL: ${THUMBNAIL_URL}
+    restart: unless-stopped
+  renderer:
+    build: ./renderer
+    environment:
+      CELERY_BROKER_URL: redis://database/
+      CELERY_RESULT_BACKEND: rpc://
+      AWS_ENDPOINT_URL: ${AWS_ENDPOINT_URL}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_BUCKET_NAME: ${AWS_BUCKET_NAME}
+      BUCKET_FILE_DOMAIN: ${BUCKET_FILE_DOMAIN}
+      oe_sentiment_model: polyglot
+    deploy:
+      mode: replicated
+      replicas: 4
+    restart: unless-stopped
+  database:
+    image: redis
+    restart: unless-stopped
+    volumes:
+      - ./persistent:/data

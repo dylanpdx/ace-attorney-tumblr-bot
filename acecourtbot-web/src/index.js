@@ -1,10 +1,29 @@
 import IndexHtml from './index.html';
+import courtbg from './courtbg.png';
+import igiari from './igiari.woff'
 
 export default {
 	async fetch(request, env, ctx) {
 		// verify path
 		const path = (new URL(request.url)).pathname
-		console.log(path);
+		
+		if (path ==='/Igiari.woff')
+		{
+			return new Response(igiari, {
+				headers: {
+					'content-type': 'font/woff',
+				},
+			});
+		}
+		if (path ==='/courtbg.png')
+		{
+			return new Response(courtbg, {
+				headers: {
+					'content-type': 'image/png',
+				},
+			});
+		}
+
 		if (!/^\/(.*?)\/(\d*)$/.test(path)) {
 			return new Response('Not Found', { status: 404 });
 		}

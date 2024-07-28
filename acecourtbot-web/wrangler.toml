@@ -7,4 +7,6 @@ compatibility_flags = ["nodejs_compat"]
 rules = [
   { type = "Data", globs = ["**/*.woff"], fallthrough = true },
   { type = "Data", globs = ["**/*.png"], fallthrough = true },
+  { type = "Data", globs = ["**/*.ico"], fallthrough = true },
+  { type = "Text", globs = ["**/*.webmanifest"], fallthrough = true },
 ]

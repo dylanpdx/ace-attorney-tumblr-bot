@@ -1,28 +1,28 @@
 import IndexHtml from './index.html';
-import courtbg from './courtbg.png';
-import igiari from './igiari.woff'
+
+const fileMap = {
+	'/Igiari.woff': { file: await import('./igiari.woff'), type: 'font/woff' },
+	'/courtbg.png': { file: await import('./courtbg.png'), type: 'image/png' },
+	'/favicon/favicon.ico': { file: await import('./favicon/favicon.ico'), type: 'image/x-icon' },
+	'/favicon/android-chrome-192x192.png': { file: await import('./favicon/android-chrome-192x192.png'), type: 'image/png' },
+	'/favicon/android-chrome-512x512.png': { file: await import('./favicon/android-chrome-512x512.png'), type: 'image/png' },
+	'/favicon/apple-touch-icon.png': { file: await import('./favicon/apple-touch-icon.png'), type: 'image/png' },
+	'/favicon/site.webmanifest': { file: await import('./favicon/site.webmanifest'), type: 'application/json' },
+};
 
 export default {
 	async fetch(request, env, ctx) {
 		// verify path
 		const path = (new URL(request.url)).pathname
-		
-		if (path ==='/Igiari.woff')
-		{
-			return new Response(igiari, {
-				headers: {
-					'content-type': 'font/woff',
-				},
-			});
-		}
-		if (path ==='/courtbg.png')
-		{
-			return new Response(courtbg, {
-				headers: {
-					'content-type': 'image/png',
-				},
-			});
-		}
+
+        const fileInfo = fileMap[path];
+        if (fileInfo) {
+            return new Response(fileInfo.file.default, {
+                headers: {
+                    'content-type': fileInfo.type,
+                },
+            });
+        }
 
 		if (!/^\/(.*?)\/(\d*)$/.test(path)) {
 			return new Response('Not Found', { status: 404 });

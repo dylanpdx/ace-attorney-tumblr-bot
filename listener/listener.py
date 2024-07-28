@@ -34,6 +34,14 @@ print("[Listener] Broker is ready")
 current_tasks = []
 lastNotif = int(time.time())
 
+
+def get_last_notif():
+    return lastNotif
+
+def set_last_notif(ts):
+    global lastNotif
+    lastNotif = ts
+
 client = pytumblr2.TumblrRestClient(
     TUMBLR_CONSUMER_KEY,
     TUMBLR_CONSUMER_SECRET,
@@ -116,16 +124,17 @@ def handle_new_post(postUser,postId):
         if message['author'] == TUMBLR_BLOG_NAME:
             return # ignore threads that have us in them
     task = app.send_task("renderer.render_comments", args=[{"messages":messages,"lastPostId":lastPostId,"lastPostBlogname":lastPostBlogname}])
-    current_tasks.append({"task": task, "postId": postId, "postUser": postUser,"lastPostId":lastPostId,"lastPostBlogname":lastPostBlogname})
+    current_tasks.append({"task": task, "postId": postId, "postUser": postUser,"lastPostId":lastPostId,"lastPostBlogname":lastPostBlogname,
+                          "reblogBlogUUID":post["blog"]["uuid"],"reblogPostReblogKey":post["reblog_key"]})
 
 def check_new_notifs():
-    global lastNotif
     clientnotifs = client.notifications(TUMBLR_BLOG_NAME,type='user_mention')
     notifs=clientnotifs['notifications']
 
     before = clientnotifs["_links"]["next"]["query_params"]["before"]
     # check if more notifs need to be fetched
-    while int(before) > lastNotif:
+    lnotif = get_last_notif()
+    while int(before) > lnotif:
         print("[Listener] Fetching more notifs")
         clientnotifs = client.notifications(TUMBLR_BLOG_NAME,type='user_mention',before=before)
         notifs+=clientnotifs['notifications']
@@ -133,7 +142,7 @@ def check_new_notifs():
 
     #print("got "+str(len(notifs))+" new notifs")
     # remove any that are older than the last notif
-    notifs = [notif for notif in notifs if notif['timestamp'] > lastNotif]
+    notifs = [notif for notif in notifs if notif['timestamp'] > lnotif]
     print("[Listener] Got "+str(len(notifs))+" new notifs after filtering")
 
     highest_ts = 0
@@ -141,7 +150,7 @@ def check_new_notifs():
         postUser = notif['target_tumblelog_name']
         postId = notif['target_post_id']
         notifTime = notif['timestamp']
-        if notifTime <= lastNotif:
+        if notifTime <= lnotif:
             continue
 
         try:
@@ -150,8 +159,8 @@ def check_new_notifs():
             print("error handling post: "+str(e))
         if notifTime > highest_ts:
             highest_ts = notifTime
-    if highest_ts > lastNotif:
-        lastNotif = highest_ts
+    if highest_ts > lnotif:
+        set_last_notif(highest_ts)
     
 # Thread that handles completed tasks
 def handle_completed_tasks():
@@ -167,9 +176,8 @@ def handle_completed_tasks():
                 lastPostBlogname = qtask['lastPostBlogname']
                 pageUrl = f'{WEB_DOMAIN}/{lastPostBlogname}/{lastPostId}'
 
-                reblogPost=client.get_single_post(blogname=postuser, id=postid)
-                reblogBlogUUID = reblogPost["blog"]["uuid"]
-                reblogPostReblogKey = reblogPost["reblog_key"]
+                reblogBlogUUID = qtask["reblogBlogUUID"]
+                reblogPostReblogKey = qtask["reblogPostReblogKey"]
                 print("[Listener] Reblogging post "+str(postid)+" from "+str(postuser))
                 client.reblog_post(
                     TUMBLR_BLOG_NAME,  # reblogging TO

@@ -143,10 +143,13 @@ def check_new_notifs():
     #print("got "+str(len(notifs))+" new notifs")
     # remove any that are older than the last notif
     notifs = [notif for notif in notifs if notif['timestamp'] > lnotif]
+    # remove any that are not type 'user_mention'
+    notifs = [notif for notif in notifs if notif['type'] == 'user_mention']
     print("[Listener] Got "+str(len(notifs))+" new notifs after filtering")
 
     highest_ts = 0
     for notif in notifs:
+        print("[Listener] Handling notif: "+str(notif))
         postUser = notif['target_tumblelog_name']
         postId = notif['target_post_id']
         notifTime = notif['timestamp']

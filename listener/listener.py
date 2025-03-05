@@ -9,13 +9,13 @@ import os
 app = Celery('listener')
 
 # Config
-TUMBLR_CONSUMER_KEY = os.environ['TUMBLR_CONSUMER_KEY']
-TUMBLR_CONSUMER_SECRET = os.environ['TUMBLR_CONSUMER_SECRET']
-TUMBLR_OAUTH_TOKEN = os.environ['TUMBLR_OAUTH_TOKEN']
-TUMBLR_OAUTH_TOKEN_SECRET = os.environ['TUMBLR_OAUTH_TOKEN_SECRET']
-TUMBLR_BLOG_NAME = os.environ['TUMBLR_BLOG_NAME']
-WEB_DOMAIN = os.environ['WEB_DOMAIN']
-THUMBNAIL_URL = os.environ['THUMBNAIL_URL']
+TUMBLR_CONSUMER_KEY = os.environ['TUMBLR_CONSUMER_KEY'].strip()
+TUMBLR_CONSUMER_SECRET = os.environ['TUMBLR_CONSUMER_SECRET'].strip()
+TUMBLR_OAUTH_TOKEN = os.environ['TUMBLR_OAUTH_TOKEN'].strip()
+TUMBLR_OAUTH_TOKEN_SECRET = os.environ['TUMBLR_OAUTH_TOKEN_SECRET'].strip()
+TUMBLR_BLOG_NAME = os.environ['TUMBLR_BLOG_NAME'].strip()
+WEB_DOMAIN = os.environ['WEB_DOMAIN'].strip()
+THUMBNAIL_URL = os.environ['THUMBNAIL_URL'].strip()
 
 NOTIF_CHECK_INTERVAL = int(os.environ['NOTIF_CHECK_INTERVAL'])
 COMPLETED_TASKS_CHECK_INTERVAL = int(os.environ['COMPLETED_TASKS_CHECK_INTERVAL'])
@@ -120,6 +120,7 @@ def handle_new_post(postUser,postId):
     
     for npf in thread:
         messages += convert_npf_to_messages(npf)
+    messages = [message for message in messages if message['text'] != "" or message['img'] is not None]
     for message in messages:
         if message['author'] == TUMBLR_BLOG_NAME:
             return # ignore threads that have us in them
@@ -207,10 +208,13 @@ threading.Timer(COMPLETED_TASKS_CHECK_INTERVAL, handle_completed_tasks).start() 
 # Thread that checks for new notifications every minute
 def check_for_new_notifs():
     while run:
-        check_new_notifs()
-        for i in range(NOTIF_CHECK_INTERVAL):
-            time.sleep(1)
-            if not run:
-                break
+        try:
+            check_new_notifs()
+            for i in range(NOTIF_CHECK_INTERVAL):
+                time.sleep(1)
+                if not run:
+                    break
+        except Exception as e:
+            print("[Listener] Error checking for new notifs: "+str(e))
 
 check_for_new_notifs()
